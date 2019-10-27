@@ -1,0 +1,1 @@
+ALTER TABLE noteful_notes DROP COLUMN IF EXITSTS date_modified;
