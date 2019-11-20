@@ -21,11 +21,11 @@
 
      afterEach('cleanup', () => db.raw('TRUNCATE noteful_folders, noteful_notes RESTART IDENTITY CASCADE'))
 
-     describe(`GET /api/notes`, () => {
+     describe(`GET /api/note`, () => {
          context(`Given no notes`, () => {
              it(`responds with 200 and an empty list`, () => {
                  return supertest(app)
-                     .get('/api/notes')
+                     .get('/api/note')
                      .expect(200, [])
              })
          })
@@ -45,20 +45,20 @@
                      })
              })
 
-             it('GET /api/notes responds with 200 and all of the notes', () => {
+             it('GET /api/note responds with 200 and all of the notes', () => {
                  return supertest(app)
-                     .get('/api/notes')
+                     .get('/api/note')
                      .expect(200, testNotes)
              })
          })
      })
 
-     describe(`GET /api/notes/:note_id`, () => {
+     describe(`GET /api/note/:note_id`, () => {
          context(`Given no notes`, () => {
              it(`responds with 404`, () => {
                  const noteId = 123456
                  return supertest(app)
-                     .get(`/api/notes/${noteId}`)
+                     .get(`/api/note/${noteId}`)
                      .expect(404, { error: { message: `Note doesn't exist` } })
              })
          })
@@ -77,17 +77,17 @@
                      })
              })
 
-             it(`GET /api/notes/:note_id responds with 200 and with requested note`, () => {
+             it(`GET /api/note/:note_id responds with 200 and with requested note`, () => {
                  const noteId = 2
                  const expectNote = testNotes[noteId - 1]
                  return supertest(app)
-                     .get(`/api/notes/${noteId}`)
+                     .get(`/api/note/${noteId}`)
                      .expect(200, expectNote)
              })
          })
      })
 
-     describe(`POST /api/notes`, () => {
+     describe(`POST /api/note`, () => {
          it(`creates a note, responding with 201 and the new note`, function() {
              this.retries(3)
              const newNote = {
@@ -95,7 +95,7 @@
              }
 
              return supertest(app)
-                 .post('/api/notes')
+                 .post('/api/note')
                  .send(newNote)
                  .expect(201)
                  .expect(res => {
@@ -111,12 +111,12 @@
          })
      })
 
-     describe(`DELETE /api/notes/:note_id`, () => {
+     describe(`DELETE /api/note/:note_id`, () => {
          context(`Given no notes`, () => {
              it(`responds with 404`, () => {
                  const noteId = 123456
                  return supertest(app)
-                     .delete(`/api/notes/${noteId}`)
+                     .delete(`/api/note/${noteId}`)
                      .expect(404, { error: { message: `Note doesn't exist` } })
              })
          })
@@ -140,11 +140,11 @@
                      const idToRemove = 2
                      const expectedNotes = testNotes.filter(note => note.id !== idToRemove)
                      return supertest(app)
-                         .delete(`/api/notes/${idToRemove}`)
+                         .delete(`/api/note/${idToRemove}`)
                          .expect(204)
                          .then(res => 
                                  supertest(app)
-                                     .get(`/api/notes`)
+                                     .get(`/api/note`)
                                      .expect(expectedNotes)
                                  )
                  })

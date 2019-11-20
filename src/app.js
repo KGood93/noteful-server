@@ -18,7 +18,7 @@ app.use(helmet())
 app.use(cors())
 
 app.use('/api/folders', folderRouter)
-app.use('/api/notes', noteRouter)
+app.use('/api/note', noteRouter)
 
 app.get('/', (req, res) => {
     res.send('Hello, world!')

@@ -1,9 +1,15 @@
-const express = require('express')
 const path = require('path')
+const express = require('express')
+const xss = require('xss')
 const noteService = require('./note-service')
 
 const notesRouter = express.Router()
 const jsonParser = express.json()
+
+const serializeNote = note => ({
+    id: note.id,
+
+})
 
 notesRouter
     .route('/')
@@ -11,7 +17,7 @@ notesRouter
         const knexInstance = req.app.get('db')
         noteService.getAllNotes(knexInstance)
             .then(notes => {
-                res.json(notes)
+                res.json(notes.map(serializeNote))
             })
             .catch(next)
     })
@@ -39,6 +45,7 @@ notesRouter
                 res 
                     .status(201)
                     .location(path.posix.join(req.originalUrl, `/${note.id}`))
+                    .json(serializeNote(note))
             })
             .catch(next)
     })
@@ -80,7 +87,7 @@ notesRouter
         })
         .patch(jsonParser, (req, res, next) => {
             const {name, content, folder_id} = req.body
-            const newNote = {name, content, folder_id}
+            const noteToUpdate = {name, content, folder_id}
 
             const numberOfValues = Object.values(newNote).filter(Boolean).length
             if(numberOfValues === 0) {
@@ -93,7 +100,7 @@ notesRouter
             noteService.updateNote(
                 req.app.get('db'),
                 req.params.note_id,
-                newNote
+                noteToUpdate
             )
             .then(() => {
                 res
