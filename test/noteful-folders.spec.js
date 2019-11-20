@@ -23,11 +23,11 @@ describe('Noteful Endpoints', function() {
 
     describe(`Folder Endpoints`, () => {
         
-        describe(`GET /api/folders`, () => {
+        describe(`GET /api/folder`, () => {
             context(`Given no folders`, () => {
                 it(`responds with 200 and an empty list`, () => {
                     return supertest(app)
-                        .get('/api/folders')
+                        .get('/api/folder')
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(200, [])
                 })
@@ -42,21 +42,21 @@ describe('Noteful Endpoints', function() {
                         .insert(testFolders)
                 })
 
-                it('GET /api/folders responds with 200 and all of the folders', () => {
+                it('GET /api/folder responds with 200 and all of the folders', () => {
                     return supertest(app)
-                        .get('/api/folders')
+                        .get('/api/folder')
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(200, testFolders)
                 })
             })
         })
 
-        describe(`GET /api/folders/:folder_id`, () => {
+        describe(`GET /api/folder/:folder_id`, () => {
             context(`Given no folders`, () => {
                 it(`responds with 404`, () => {
                     const folderId = 123456
                     return supertest(app)
-                        .get(`/api/folders/${folderId}`)
+                        .get(`/api/folder/${folderId}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(404, { error: { message: `Folder doesn't exist` } })
                 })
@@ -71,18 +71,18 @@ describe('Noteful Endpoints', function() {
                         .insert(testFolders)
                 })
 
-                it(`GET /api/folders/:folder_id responds with 200 and with requested folder`, () => {
+                it(`GET /api/folder/:folder_id responds with 200 and with requested folder`, () => {
                     const folderId = 2
                     const expectedFolder = testFolders[folderId - 1]
                     return supertest(app)
-                        .get(`/api/folders/${folderId}`)
+                        .get(`/api/folder/${folderId}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(200, expectedFolder)
                 })
             })
         })
 
-        describe(`POST /api/folders`, () => {
+        describe(`POST /api/folder`, () => {
             it(`creates a folder, responding with 201 and the new folder`, function() {
                 this.retries(3)
                 const newFolder = {
@@ -90,7 +90,7 @@ describe('Noteful Endpoints', function() {
                 }
 
                 return supertest(app)
-                    .post('/api/folders')
+                    .post('/api/folder')
                     .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .send(newFolder)
                     .expect(201)
@@ -101,18 +101,18 @@ describe('Noteful Endpoints', function() {
                     })
                     .then(postRes => 
                         supertest(app)
-                            .get(`/api/folders/${postRes.body.id}`)
+                            .get(`/api/folder/${postRes.body.id}`)
                             .expect(postRes.body)
                     )
             })
         })
 
-        describe(`DELETE /api/folders/:folder_id`, () => {
+        describe(`DELETE /api/folder/:folder_id`, () => {
             context(`Given no folders`, () => {
                 it(`responds with 404`, () => {
                     const folderId = 123456
                     return supertest(app)
-                        .delete(`/api/folders/${folderId}`)
+                        .delete(`/api/folder/${folderId}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(404, { error: { message: `Folder doesn't exist` } })
                 })
@@ -132,12 +132,12 @@ describe('Noteful Endpoints', function() {
                         const idToRemove = 2
                         const expectedFolders = testFolders.filter(folder => folder.id !== idToRemove)
                         return supertest(app)
-                            .delete(`/api/folders/${idToRemove}`)
+                            .delete(`/api/folder/${idToRemove}`)
                             .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                             .expect(204)
                             .then(res => 
                                     supertest(app)
-                                        .get(`/api/folders`)
+                                        .get(`/api/folder`)
                                         .expect(expectedFolders)
                                     )
                     })
@@ -148,11 +148,11 @@ describe('Noteful Endpoints', function() {
 
     describe(`Note Endpoints`, () => {
         
-        describe(`GET /api/notes`, () => {
+        describe(`GET /api/note`, () => {
             context(`Given no notes`, () => {
                 it(`responds with 200 and an empty list`, () => {
                     return supertest(app)
-                        .get('/api/notes')
+                        .get('/api/note')
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(200, [])
                 })
@@ -173,21 +173,21 @@ describe('Noteful Endpoints', function() {
                         })
                 })
 
-                it('GET /api/notes responds with 200 and all of the notes', () => {
+                it('GET /api/note responds with 200 and all of the notes', () => {
                     return supertest(app)
-                        .get('/api/notes')
+                        .get('/api/note')
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(200, testNotes)
                 })
             })
         })
 
-        describe(`GET /api/notes/:note_id`, () => {
+        describe(`GET /api/note/:note_id`, () => {
             context(`Given no notes`, () => {
                 it(`responds with 404`, () => {
                     const noteId = 123456
                     return supertest(app)
-                        .get(`/api/notes/${noteId}`)
+                        .get(`/api/note/${noteId}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(404, { error: { message: `Note doesn't exist` } })
                 })
@@ -208,18 +208,18 @@ describe('Noteful Endpoints', function() {
                         })
                 })
 
-                it(`GET /api/notes/:note_id responds with 200 and with requested note`, () => {
+                it(`GET /api/note/:note_id responds with 200 and with requested note`, () => {
                     const noteId = 2
                     const expectedNote = testNotes[noteId - 1]
                     return supertest(app)
-                        .get(`/api/notes/${noteId}`)
+                        .get(`/api/note/${noteId}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(200, expectedNote)
                 })
             })
         })
 
-        describe(`POST /api/notes`, () => {
+        describe(`POST /api/note`, () => {
             const testFolders = makeFoldersArray()
 
             beforeEach('insert folders', () => {
@@ -237,7 +237,7 @@ describe('Noteful Endpoints', function() {
                 }
 
                 return supertest(app)
-                    .post('/api/notes')
+                    .post('/api/note')
                     .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                     .send(newNote)
                     .expect(201)
@@ -246,22 +246,22 @@ describe('Noteful Endpoints', function() {
                         expect(res.body.content).to.eql(newNote.content)
                         expect(res.body.folder_id).to.eql(newNote.folder_id)
                         expect(res.body).to.have.property('id')
-                        expect(res.headers.location).to.eql(`/api/notes/${res.body.id}`)
+                        expect(res.headers.location).to.eql(`/api/note/${res.body.id}`)
                     })
                     .then(postRes => 
                         supertest(app)
-                            .get(`/api/notes/${postRes.body.id}`)
+                            .get(`/api/note/${postRes.body.id}`)
                             .expect(postRes.body)
                     )
             })
         })
 
-        describe(`DELETE /api/notes/:note_id`, () => {
+        describe(`DELETE /api/note/:note_id`, () => {
             context(`Given no notes`, () => {
                 it(`responds with 404`, () => {
                     const noteId = 123456
                     return supertest(app)
-                        .delete(`/api/notes/${noteId}`)
+                        .delete(`/api/note/${noteId}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(404, { error: { message: `Note doesn't exist` } })
                 })
@@ -286,24 +286,24 @@ describe('Noteful Endpoints', function() {
                     const idToRemove = 2
                     const expectedNotes = testNotes.filter(note => note.id !== idToRemove)
                     return supertest(app)
-                        .delete(`/api/notes/${idToRemove}`)
+                        .delete(`/api/note/${idToRemove}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(204)
                         .then(res => 
                                 supertest(app)
-                                    .get(`/api/notes`)
+                                    .get(`/api/note`)
                                     .expect(expectedNotes)
                                 )
                 })
             })
         })
 
-        describe(`PATCH /api/notes/:note_id`, () => {
+        describe(`PATCH /api/note/:note_id`, () => {
             context(`Given no notes`, () => {
                 it(`responds with 404`, () => {
                     const noteId = 123456
                     return supertest(app)
-                        .delete(`/api/notes/${noteId}`)
+                        .delete(`/api/note/${noteId}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .expect(404, { error: { message: `Note doesn't exist` } })
                 })
@@ -337,13 +337,13 @@ describe('Noteful Endpoints', function() {
                     }
 
                     return supertest(app)
-                        .patch(`/api/notes/${idToUpdate}`)
+                        .patch(`/api/note/${idToUpdate}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .send(newNote)
                         .expect(204)
                         .then(res => 
                                 supertest(app)
-                                    .get(`/api/notes/${idToUpdate}`)
+                                    .get(`/api/note/${idToUpdate}`)
                                     .expect(expectedNote)
                         )
                 })
@@ -352,7 +352,7 @@ describe('Noteful Endpoints', function() {
                     const idToUpdate = 2
                     
                     return supertest(app)
-                        .patch(`/api/notes/${idToUpdate}`)
+                        .patch(`/api/note/${idToUpdate}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .send({ irrelvantField: 'foo' })
                         .expect(400, {
@@ -373,7 +373,7 @@ describe('Noteful Endpoints', function() {
                     }
                     
                     return supertest(app)
-                        .patch(`/api/notes/${idToUpdate}`)
+                        .patch(`/api/note/${idToUpdate}`)
                         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                         .send({
                             ...newNote,
@@ -382,7 +382,7 @@ describe('Noteful Endpoints', function() {
                         .expect(204)
                         .then(res => 
                             supertest(app)
-                                .get(`/api/notes/${idToUpdate}`)
+                                .get(`/api/note/${idToUpdate}`)
                                 .expect(expectedNote)
                         )
                 })
