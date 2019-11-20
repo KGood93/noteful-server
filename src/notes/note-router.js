@@ -8,7 +8,10 @@ const jsonParser = express.json()
 
 const serializeNote = note => ({
     id: note.id,
-
+    title: xss(note.title),
+    content: xss(note.content),
+    date_modified: note.date_modified,
+    folder_id: note.folder_id
 })
 
 notesRouter
@@ -22,6 +25,7 @@ notesRouter
             .catch(next)
     })
     .post(jsonParser, (req, res, next) => {
+        const knexInstance = req.app.get('db')
         const {name, content, folder_id, date_modified} = req.body
         const newNote = {name, content, folder_id}
 
@@ -37,10 +41,7 @@ notesRouter
 
         newNote.date_modified = date_modified;
 
-        noteService.insertNote(
-            req.app.get('db'),
-            newNote
-        )
+        noteService.insertNote(knexInstance, newNote)
             .then(note => {
                 res 
                     .status(201)
@@ -53,10 +54,8 @@ notesRouter
     notesRouter
         .route('/:note_id')
         .all((req, res, next) => {
-            noteService.getNoteById(
-                req.app.get('db'),
-                req.params.note_id
-            )
+            const knexInstance = req.app.get('db')
+            noteService.getNoteById(knexInstance, req.params.note_id)
             .then(note => {
                 if(!note) {
                     return res
@@ -71,13 +70,11 @@ notesRouter
             .catch(next)
         })
         .get((req, res, next) => {
-            res.json(res.note)
+            res.json(serializeNote(res.note))
         })
         .delete((req, res, next) => {
-            noteService.deleteNote(
-                req.app.get('db'),
-                req.params.note_id
-            )
+            const knexInstance = req.app.get('db')
+            noteService.deleteNote(knexInstance, req.params.note_id)
             .then(() => {
                 res
                     .status(204)
@@ -86,10 +83,11 @@ notesRouter
             .catch(next)
         })
         .patch(jsonParser, (req, res, next) => {
-            const {name, content, folder_id} = req.body
-            const noteToUpdate = {name, content, folder_id}
+            const knexInstance = req.app.get('db')
+            const {title, content, folder_id} = req.body
+            const noteToUpdate = {title, content, folder_id}
 
-            const numberOfValues = Object.values(newNote).filter(Boolean).length
+            const numberOfValues = Object.values(noteToUpdate).filter(Boolean).length
             if(numberOfValues === 0) {
                 return res
                     .status(400)
@@ -98,7 +96,7 @@ notesRouter
                     })
             }
             noteService.updateNote(
-                req.app.get('db'),
+                knexInstance,
                 req.params.note_id,
                 noteToUpdate
             )
